@@ -1,0 +1,52 @@
+version: 0.2
+
+env:
+  parameter-store:
+      $DOCKER_URL: "/myapp/dockercredentials/dockerurl"
+      $DOCKER_Username: "/myapp/dockercredentials/dockerusername"
+      $DOCKER_Pass: "/myapp/dockercredentials/dockerpass"
+  phases:
+    install:
+    #If you use the Ubuntu standard image 2.0 or later, you must specify runtime-versions.
+    #If you specify runtime-versions and use an image other than Ubuntu standard image 2.0, the build fails.
+    runtime-versions:
+        java: corretto11
+        #name: version
+    commands:
+      - curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/artifactory/releases/org/jenkins-ci/main/remoting/4.13.3/remoting-4.13.3.jar
+      - chmod 755 /usr/share/jenkins && chmod 644 /usr/share/jenkins/agent.jar && ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar
+      - mkdir -p /home/jenkins/.jenkins && mkdir -p /home/jenkins/agent
+      - curl --create-dirs  -fsSLo /usr/local/bin/jenkins-agent  https://raw.githubusercontent.com/carpnick/docker-inbound-agent/master/jenkins-agent
+      - chmod +x /usr/local/bin/jenkins-agent && ln -s /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-slave
+       #- command
+   #pre_build:
+     #commands:
+        #- command
+        #- command
+    build:
+     commands:
+        -echo "$DOCKER_Pass" | docker login -u "$DOCKER_Username" --password-stdin "$DOCKER_URL"
+        - docker build -t "$DOCKER_URL/$DOCKER_Username/jenkinstest1:latest"
+        - docker push "$DOCKER_URL/$DOCKER_Username/jenkinstest1:latest"
+  #post_build:
+    #commands:
+      # - command
+      # - command
+#reports:
+  #report-name-or-arn:
+    #files:
+      # - location
+      # - location
+    #base-directory: location
+    #discard-paths: yes
+    #file-format: JunitXml | CucumberJson
+#artifacts:
+  #files:
+    # - location
+    # - location
+  #name: $(date +%Y-%m-%d)
+  #discard-paths: yes
+  #base-directory: location
+#cache:
+  #paths:
+    # - paths
