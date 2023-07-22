@@ -1,5 +1,5 @@
 # Base image
-FROM java:corretto17
+FROM ubuntu
 
 # Set the working directory inside the container
 WORKDIR /app
