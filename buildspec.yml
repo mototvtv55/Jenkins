@@ -18,7 +18,7 @@ env:
      #commands:
         #- command
         #- command
-    build:
+   build:
      commands:
         - ./InstallJenkins.sh
         - echo "$DOCKER_Pass" | docker login -u "$DOCKER_Username" --password-stdin "$DOCKER_URL"
